@@ -1,6 +1,6 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ModelView from "./ModelView";
 import { yellowImg } from "./../utils/index";
 
@@ -8,6 +8,7 @@ import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
 import { View } from "@react-three/drei";
 import { models, sizes } from "../constants";
+import { animateGsapTimeline } from "./../constants/animation";
 
 const Model = () => {
   useGSAP(() => {
@@ -32,10 +33,28 @@ const Model = () => {
   const [smallRotation, setSmallRotation] = useState(0);
   const [largeRotation, setLargeRotation] = useState(0);
 
+  const tl = gsap.timeline();
+
+  useEffect(() => {
+    if (size === "large") {
+      animateGsapTimeline(tl, small, smallRotation, "#view1", "#view2", {
+        transform: "translateX(-100%)",
+        duration: 1,
+      });
+    }
+
+    if (size === "small") {
+      animateGsapTimeline(tl, large, largeRotation, "#view2", "#view1", {
+        transform: "translateX(0)",
+        duration: 1,
+      });
+    }
+  }, [size]);
+
   return (
-    <section className="">
+    <section className="py-10">
       <div className="screen-max-width">
-        <h1 id="heading" className="section-heading">
+        <h1 id="heading" className="section-heading px-4 pt-8">
           Take a closer look.
         </h1>
       </div>
@@ -88,6 +107,7 @@ const Model = () => {
                   key={idx}
                   className="w-6 h-6 rounded-full mx-2 cursor-pointer"
                   style={{ backgroundColor: item.color[0] }}
+                  onClick={() => setModel(item)}
                 ></li>
               ))}
             </ul>
